@@ -6,16 +6,21 @@ class Ativo(models.Model):
     symbol = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
 
+
 class Email(models.Model):
     email = models.EmailField()
 
+
 class Monitoramento(models.Model):
     ativo = models.ForeignKey(Ativo, on_delete=models.PROTECT)
-    schedule = models.IntegerField(default = 60, null=True, blank=True, verbose_name="Monitoramento em minutos")
+    schedule = models.IntegerField(
+        default=60, null=True, blank=True, verbose_name="Monitoramento em minutos"
+    )
     min_value = models.DecimalField(max_digits=12, decimal_places=2)
     max_value = models.DecimalField(max_digits=12, decimal_places=2)
     email = models.ForeignKey(Email, on_delete=models.PROTECT)
     active = models.BooleanField(default=True)
+
 
 class Historico(models.Model):
     ativo = models.ForeignKey(Ativo, on_delete=models.PROTECT)

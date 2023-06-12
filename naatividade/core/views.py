@@ -5,11 +5,9 @@ from django.urls import reverse
 from .forms import MonitoramentoForm
 from .models import Ativo, Monitoramento
 
-# Create your views here.
-
 
 def ativo_list(request):
-    lista_ativos = Ativo.objects.filter(active=True)
+    lista_ativos = Ativo.objects.all()
     context = {'object_list': lista_ativos}
     return render(request, "index.html", context)
 

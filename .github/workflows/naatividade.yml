@@ -24,7 +24,7 @@ jobs:
         black .
     - name: Copiar env
       run: |
-        cp .env-sample .env
+        cp env-sample .env
     - name: Rodando os Pytest
       run: |
         pytest

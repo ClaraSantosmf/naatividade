@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cadastre um ativo para monitoramento</title>
+</head>
+<body>
+    <h1>Lista de Ativos para monitoramento</h1>
+
+    <!-- Adicione o formulário de busca de ativos do Django com autocomplete -->
+
+    <h3> Formulário de monitoramento </h3>
+    <form action="/cadastramento_de_monitoramento/" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit">
+    </form>
+</body>
+</html>

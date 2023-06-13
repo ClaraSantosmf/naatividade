@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
+from .svc import monitoramento_svc
 from .forms import MonitoramentoForm
 from .models import Ativo, Monitoramento
 
@@ -21,6 +22,7 @@ def index(request):
 def cadastrar_monitoramento(request):
     form = MonitoramentoForm(request.POST or None)
     if form.is_valid() and request.method == "POST":
+        monitoramento_svc.validacao_cadastramento(form)
         form.save()
         return redirect(reverse("index"))
     context = {"form": form}

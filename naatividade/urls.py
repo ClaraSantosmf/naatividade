@@ -7,8 +7,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.index, name="index"),
     path(
-        "cadastrar",
+        "cadastrar/",
         views.cadastrar_monitoramento,
-        name="cadastrar_monitoramento",
+        name="cadastrar",
     ),
 ]

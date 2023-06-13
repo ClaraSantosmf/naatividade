@@ -16,6 +16,7 @@ class Email(models.Model):
     def __str__(self):
         return self.email
 
+
 class Monitoramento(models.Model):
     ativo = models.ForeignKey(Ativo, on_delete=models.PROTECT)
     schedule = models.IntegerField(
@@ -28,6 +29,7 @@ class Monitoramento(models.Model):
 
     def __str__(self):
         return self.ativo.nome
+
 
 class Historico(models.Model):
     ativo = models.ForeignKey(Ativo, on_delete=models.PROTECT)

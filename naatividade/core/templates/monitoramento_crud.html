@@ -9,7 +9,7 @@
     <!-- Adicione o formulário de busca de ativos do Django com autocomplete -->
 
     <h3> Formulário de monitoramento </h3>
-    <form action="/cadastrar" method="post">
+    <form action="cadastrar" method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit">

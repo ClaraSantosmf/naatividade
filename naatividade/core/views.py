@@ -18,9 +18,9 @@ def index(request):
     return render(request, "index.html", context)
 
 
-def cadastramento_de_monitoramento(request):
+def cadastrar_monitoramento(request):
     form = MonitoramentoForm(request.POST or None)
-    if form.is_valid() and request.method == "post":
+    if form.is_valid() and request.method == "POST":
         form.save()
         return redirect(reverse("index"))
     context = {"form": form}

@@ -6,10 +6,15 @@ class Ativo(models.Model):
     symbol = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.nome
+
 
 class Email(models.Model):
     email = models.EmailField()
 
+    def __str__(self):
+        return self.email
 
 class Monitoramento(models.Model):
     ativo = models.ForeignKey(Ativo, on_delete=models.PROTECT)
@@ -21,6 +26,8 @@ class Monitoramento(models.Model):
     email = models.ForeignKey(Email, on_delete=models.PROTECT)
     active = models.BooleanField(default=True)
 
+    def __str__(self):
+        return self.ativo.nome
 
 class Historico(models.Model):
     ativo = models.ForeignKey(Ativo, on_delete=models.PROTECT)

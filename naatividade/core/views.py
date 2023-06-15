@@ -14,7 +14,9 @@ def ativo_list(request):
 
 
 def index(request):
-    monitoramento_ativos = Monitoramento.objects.filter(active=True)
+    monitoramento_ativos = Monitoramento.objects.filter(active=True).select_related(
+        "ativo"
+    )
     context = {"object_list": monitoramento_ativos}
     return render(request, "index.html", context)
 

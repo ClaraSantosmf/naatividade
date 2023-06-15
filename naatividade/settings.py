@@ -90,6 +90,8 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+DEFAULT_FROM_EMAIL = "NaAtividade <naatividade@gmail.com>"
+
 # Configuração de ambiente de dev
 STATIC_URL = "static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")

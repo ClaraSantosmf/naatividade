@@ -1,33 +1,41 @@
 <!DOCTYPE html>
+{% load static %}
 <html>
 <head>
+    <link rel="stylesheet" type="text/css" href="{% static 'naatividade/css/index.css' %}">
     <title>Lista de Ativos</title>
 </head>
 <body>
-    <h1>Lista de Ativos</h1>
+    <div class="container">
+        <h1 class="title">Lista de Ativos</h1>
 
-    <!-- Adicione o formulário de busca do Django -->
+        <!-- Adicione o formulário de busca do Django -->
 
-    <table>
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Símbolo</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for ativo in ativos %}
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ ativo.nome }}</td>
-                    <td>{{ ativo.symbol }}</td>
+                    <th>Nome</th>
+                    <th>Symbol</th>
+                    <th>Valor de alerta de compra</th>
+                    <th>Valor de alerta de Venda</th>
                 </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="2">Nenhum ativo encontrado.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <a href="{% url 'cadastrar' %}" class="btn btn-primary">Cadastrar Novo Monitoramento</a>
+            </thead>
+            <tbody>
+                {% for ativo in object_list %}
+                    <tr>
+                        <td>{{ ativo.ativo.nome }}</td>
+                        <td>{{ ativo.ativo.symbol }}</td>
+                        <td>{{ ativo.min_value }}</td>
+                        <td>{{ ativo.max_value }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4">Nenhum ativo encontrado.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'cadastrar' %}" class="btn btn-primary">Cadastrar Novo Monitoramento</a>
+    </div>
 </body>
 </html>

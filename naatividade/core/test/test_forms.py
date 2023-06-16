@@ -3,7 +3,7 @@ from django.test import Client
 from naatividade.core.models import Ativo
 
 
-def test_status_code(client: Client):
+def test_status_code(db, client: Client):
     resp = client.get("/")
     assert resp.status_code == 200
 

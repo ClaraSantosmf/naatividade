@@ -17,9 +17,11 @@ def send_mail_alerta_venda(ativo_id):
             ativo.nome, destinatario, historico.valor, monitoramento.max_value
         )
         infos_emails_para_vender.append(infoemail.lista_emails_venda())
-    if infos_emails_para_vender:
-        send_mass_mail(infos_emails_para_vender, fail_silently=False)
-    return
+        try:
+            if infos_emails_para_vender:
+                send_mass_mail(infos_emails_para_vender, fail_silently=False)
+        except:
+            return
 
 
 def send_mail_alerta_compra(ativo_id):
@@ -40,6 +42,3 @@ def send_mail_alerta_compra(ativo_id):
             send_mass_mail(infos_emails_para_comprar, fail_silently=False)
         except:
             return
-
-
-# Filter traz um queryset e o get traz o objeto. Na segunda não é gte

@@ -10,7 +10,7 @@ def send_mail_alerta_venda(monitoramentos_validos_venda):
         valor_no_historico = monitoramento.ativo.historico_set.order_by("-timestamp").first().valor
         destinatario = str(monitoramento.email)
         infoemail = InfoEmail(
-         monitoramento.ativo.nome, destinatario, valor_no_historico, monitoramento.min_value
+         monitoramento.ativo.nome, destinatario, valor_no_historico, monitoramento.max_value
         )
         infos_emails_para_vender.append(infoemail.lista_emails_venda())
         try:

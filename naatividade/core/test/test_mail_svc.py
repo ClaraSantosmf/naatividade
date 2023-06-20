@@ -12,8 +12,37 @@ from ..svc.api_svc import confere_e_atualiza_preco_de_ativo_na_api
 
 BR_TIME = ZoneInfo("America/Sao_Paulo")
 
+
 @pytest.fixture
-def mock_fluxo_alerta_venda():
+def mock_fluxo_alerta_venda(time_machine):
+    time_machine.move_to(dt.datetime(1999, 9, 9, 15, 0, tzinfo=BR_TIME))
+    timedelta_atual = dt.datetime.now()
+    email_primeiro = Email.objects.create(email="destinatario@gmail.com")
+    email_segundo = Email.objects.create(email="destinatario2@gmail.com")
+    email_azul = Email.objects.create(email="destinatario_azul@gmail.com")
+    ativo_petrobras = Ativo.objects.create(nome="Petrobras", symbol="PETR3")
+    ativo_azul = Ativo.objects.create(nome="Azul SA", symbol="AZUL4")
+    Monitoramento.objects.create(
+        ativo=ativo_petrobras, min_value=1, max_value=1.4, email=email_primeiro, schedule=8, last_view=timedelta_atual - dt.timedelta(minutes=5), next_view=timedelta_atual - dt.timedelta(minutes=8)
+    )
+    Monitoramento.objects.create(
+        ativo=ativo_petrobras, min_value=0.50, max_value=2.20, email=email_segundo,  schedule=5, last_view=timedelta_atual - dt.timedelta(minutes=10), next_view=timedelta_atual - dt.timedelta(minutes=5)
+    )
+    Monitoramento.objects.create(
+        ativo=ativo_azul,
+        min_value=15,
+        max_value=20,
+        email=email_azul,
+        schedule=10,
+        last_view=timedelta_atual - dt.timedelta(minutes=5),
+        next_view=timedelta_atual + dt.timedelta(minutes=5)
+    )
+    Historico.objects.create(ativo=ativo_petrobras, valor=1.4)
+    Historico.objects.create(ativo=ativo_azul, valor=19.87)
+    return
+
+@pytest.fixture
+def mock_fluxo_alerta_venda_ok():
     email_primeiro = Email.objects.create(email="destinatario@gmail.com")
     email_segundo = Email.objects.create(email="destinatario2@gmail.com")
     ativo_petrobras = Ativo.objects.create(nome="Petrobras", symbol="PETR3")
@@ -88,11 +117,11 @@ def test_send_mail_alerta_venda(db, mock_fluxo_alerta_venda):
             ["destinatario2@gmail.com"],
         ),
     ]
-
+    ativo_petrobras = Monitoramento.objects.select_related('ativo', 'email').filter(next_view__lte=dt.datetime.now())
     with mock.patch(
         "naatividade.core.svc.mail_svc.send_mass_mail"
     ) as mock_send_mass_mail:
-        send_mail_alerta_venda(ativo_petrobras.id)
+        send_mail_alerta_venda(ativo_petrobras)
     mock_send_mass_mail.call_count == 2
     mock_send_mass_mail.assert_called_with(datatuple, fail_silently=False)
 
@@ -143,43 +172,8 @@ def test_nao_send_mail_alerta_compra_sem_parametro(
         send_mail_alerta_compra(ativo_magalu.id)
     mock_send_mass_mail.assert_not_called()
 
-@time_machine.travel(dt.datetime(1999, 9, 9, 15, 0, tzinfo=BR_TIME))
-@pytest.fixture
-def mock_fluxo_alerta_venda_nova_logica():
-    timedelta_atual = dt.datetime.now().astimezone(BR_TIME)
-    email_primeiro = Email.objects.create(email="destinatario@gmail.com")
-    email_segundo = Email.objects.create(email="destinatario2@gmail.com")
-    ativo_petrobras = Ativo.objects.create(nome="Petrobras", symbol="PETR3")
-    Monitoramento.objects.create(
-        ativo=ativo_petrobras, min_value=1, max_value=1.4, email=email_primeiro, last_view=timedelta_atual, next_view=timedelta_atual + dt.timedelta(minutes=5)
-    )
-    Monitoramento.objects.create(
-        ativo=ativo_petrobras, min_value=0.50, max_value=2.20, email=email_segundo
-    )
-    Historico.objects.create(ativo=ativo_petrobras, valor=1.4)
-    yield ativo_petrobras
 
 
-@pytest.fixture()
-def mock_banco_para_filtro_nova_logica(db, time_machine):
-    time_machine.move_to(dt.datetime(1999, 9, 9, 15, 0, tzinfo=BR_TIME))
-    timedelta_atual = dt.datetime.now()
-    email = Email.objects.create(email="destinatario@gmail.com")
-    ativo_azul = Ativo.objects.create(nome="Azul SA", symbol="AZUL4")
-    historico = Historico.objects.create(ativo=ativo_azul, valor=19.87)
-    monitoramento = Monitoramento.objects.create(
-        ativo=ativo_azul,
-        min_value=15,
-        max_value=20,
-        email=email,
-        schedule=5,
-        last_view=timedelta_atual - dt.timedelta(minutes=5),
-        next_view=timedelta_atual
-    )
-
-    return historico, monitoramento
-
-
-def test_confere_e_atualiza_preco_de_ativo_na_api(mock_banco_para_filtro_nova_logica):
+def test_confere_e_atualiza_preco_de_ativo_na_api(mock_fluxo_alerta_venda):
     a = confere_e_atualiza_preco_de_ativo_na_api()
     assert 1==1

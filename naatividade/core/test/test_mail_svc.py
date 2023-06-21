@@ -29,7 +29,7 @@ def mock_db_alerta_venda(time_machine):
         email=email_primeiro,
         schedule=8,
         last_view=timedelta_atual - dt.timedelta(minutes=5),
-        next_view=timedelta_atual - dt.timedelta(minutes=8)
+        next_view=timedelta_atual - dt.timedelta(minutes=8),
     )
     Monitoramento.objects.create(
         ativo=ativo_petrobras,
@@ -38,7 +38,7 @@ def mock_db_alerta_venda(time_machine):
         email=email_segundo,
         schedule=5,
         last_view=timedelta_atual - dt.timedelta(minutes=10),
-        next_view=timedelta_atual - dt.timedelta(minutes=5)
+        next_view=timedelta_atual - dt.timedelta(minutes=5),
     )
     Monitoramento.objects.create(
         ativo=ativo_azul,
@@ -47,11 +47,12 @@ def mock_db_alerta_venda(time_machine):
         email=email_azul,
         schedule=10,
         last_view=timedelta_atual - dt.timedelta(minutes=5),
-        next_view=timedelta_atual + dt.timedelta(minutes=5)
+        next_view=timedelta_atual + dt.timedelta(minutes=5),
     )
     Historico.objects.create(ativo=ativo_petrobras, valor=1.4)
     Historico.objects.create(ativo=ativo_azul, valor=19.87)
     return
+
 
 @pytest.fixture
 def mock_db_alerta_compra(time_machine):
@@ -61,14 +62,22 @@ def mock_db_alerta_compra(time_machine):
     email_segundo = Email.objects.create(email="destinatario2@gmail.com")
     ativo_magalu = Ativo.objects.create(nome="Magalu", symbol="MGLU3")
     monitoramento_um = Monitoramento.objects.create(
-        ativo=ativo_magalu, min_value=2.0, max_value=4, email=email_primeiro, schedule=5,
+        ativo=ativo_magalu,
+        min_value=2.0,
+        max_value=4,
+        email=email_primeiro,
+        schedule=5,
         last_view=dt.datetime.now() - dt.timedelta(minutes=10),
-        next_view=dt.datetime.now() - dt.timedelta(minutes=5)
+        next_view=dt.datetime.now() - dt.timedelta(minutes=5),
     )
     monitoramento_dois = Monitoramento.objects.create(
-        ativo=ativo_magalu, min_value=1.50, max_value=3.20, email=email_segundo, schedule=5,
+        ativo=ativo_magalu,
+        min_value=1.50,
+        max_value=3.20,
+        email=email_segundo,
+        schedule=5,
         last_view=timedelta_atual.now() - dt.timedelta(minutes=10),
-        next_view=timedelta_atual.now() - dt.timedelta(minutes=5)
+        next_view=timedelta_atual.now() - dt.timedelta(minutes=5),
     )
     Historico.objects.create(ativo=ativo_magalu, valor=2.0)
     yield [monitoramento_um, monitoramento_dois]
@@ -90,7 +99,9 @@ def test_send_mail_alerta_venda(db, mock_db_alerta_venda):
             ["destinatario2@gmail.com"],
         ),
     ]
-    ativo_petrobras = Monitoramento.objects.select_related('ativo', 'email').filter(next_view__lte=dt.datetime.now())
+    ativo_petrobras = Monitoramento.objects.select_related("ativo", "email").filter(
+        next_view__lte=dt.datetime.now()
+    )
     with mock.patch(
         "naatividade.core.svc.mail_svc.send_mass_mail"
     ) as mock_send_mass_mail:

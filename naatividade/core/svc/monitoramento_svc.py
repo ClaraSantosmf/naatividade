@@ -37,6 +37,7 @@ class InfoEmail:
         )
         return template_email
 
+
 def validacao_cadastramento(form):
     form.save()
     return

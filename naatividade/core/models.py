@@ -26,6 +26,12 @@ class Monitoramento(models.Model):
     max_value = models.DecimalField(max_digits=12, decimal_places=2)
     email = models.ForeignKey(Email, on_delete=models.PROTECT)
     active = models.BooleanField(default=True)
+    last_view = models.DateTimeField(
+        auto_now=False, auto_now_add=False, null=True, blank=True
+    )
+    next_view = models.DateTimeField(
+        auto_now=False, auto_now_add=False, null=True, blank=True
+    )
 
     def __str__(self):
         return self.ativo.nome

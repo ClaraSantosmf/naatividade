@@ -25,7 +25,6 @@ def cadastrar_monitoramento(request):
     form = MonitoramentoForm(request.POST or None)
     if form.is_valid() and request.method == "POST":
         monitoramento_svc.validacao_cadastramento(form)
-        form.save()
         return redirect(reverse("index"))
     context = {"form": form}
     return render(request, "monitoramento_crud.html", context)

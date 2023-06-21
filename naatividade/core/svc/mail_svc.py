@@ -4,41 +4,43 @@ from naatividade.core.models import Monitoramento, Historico, Ativo
 from naatividade.core.svc.monitoramento_svc import InfoEmail
 
 
-def send_mail_alerta_venda(ativo_id):
-    infos_emails_para_vender = []
-    ativo = Ativo.objects.get(id=ativo_id)
-    historico = Historico.objects.filter(ativo=ativo_id).order_by("-timestamp").first()
-    monitoramentos_validos_venda = Monitoramento.objects.filter(
-        ativo=ativo_id, max_value__gte=historico.valor
-    ).select_related("email")
-    for monitoramento in monitoramentos_validos_venda:
-        destinatario = monitoramento.email.__str__()  # qual melhor forma disso?
-        infoemail = InfoEmail(
-            ativo.nome, destinatario, historico.valor, monitoramento.max_value
-        )
-        infos_emails_para_vender.append(infoemail.lista_emails_venda())
-        try:
-            if infos_emails_para_vender:
+def send_mail_alerta_venda(monitoramentos_validos_venda):
+    if monitoramentos_validos_venda:
+        infos_emails_para_vender = []
+        for monitoramento in monitoramentos_validos_venda:
+            valor_no_historico = (
+                monitoramento.ativo.historico_set.order_by("-timestamp").first().valor
+            )
+            destinatario = str(monitoramento.email)
+            infoemail = InfoEmail(
+                monitoramento.ativo.nome,
+                destinatario,
+                valor_no_historico,
+                monitoramento.max_value,
+            )
+            infos_emails_para_vender.append(infoemail.lista_emails_venda())
+            try:
                 send_mass_mail(infos_emails_para_vender, fail_silently=False)
-        except:
-            return
+            except:
+                return
 
 
-def send_mail_alerta_compra(ativo_id):
-    infos_emails_para_comprar = []
-    ativo = Ativo.objects.get(id=ativo_id)
-    historico = Historico.objects.filter(ativo=ativo_id).order_by("-timestamp").first()
-    monitoramentos_validos_compra = Monitoramento.objects.filter(
-        ativo=ativo_id, min_value__lte=historico.valor
-    ).select_related("email")
-    for monitoramento in monitoramentos_validos_compra:
-        destinatario = monitoramento.email.__str__()
-        infoemail = InfoEmail(
-            ativo.nome, destinatario, historico.valor, monitoramento.min_value
-        )
-        infos_emails_para_comprar.append(infoemail.lista_emails_compra())
-    if infos_emails_para_comprar:
-        try:
-            send_mass_mail(infos_emails_para_comprar, fail_silently=False)
-        except:
-            return
+def send_mail_alerta_compra(monitoramentos_validos_compra):
+    if monitoramentos_validos_compra:
+        infos_emails_para_comprar = []
+        for monitoramento in monitoramentos_validos_compra:
+            valor_no_historico = (
+                monitoramento.ativo.historico_set.order_by("-timestamp").first().valor
+            )
+            destinatario = str(monitoramento.email)
+            infoemail = InfoEmail(
+                monitoramento.ativo.nome,
+                destinatario,
+                valor_no_historico,
+                monitoramento.min_value,
+            )
+            infos_emails_para_comprar.append(infoemail.lista_emails_compra())
+            try:
+                send_mass_mail(infos_emails_para_comprar, fail_silently=False)
+            except:
+                return
